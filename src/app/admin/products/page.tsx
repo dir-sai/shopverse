@@ -14,12 +14,12 @@ import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Product {
-  _id: string;
+  id: string;
   name: string;
   description: string;
   price: number;
   category: string;
-  stock: number;
+  countInStock: number;
   image: string;
 }
 
@@ -86,7 +86,7 @@ export default function AdminProducts() {
       let method = 'POST';
 
       if (editingProduct) {
-        url = `/api/admin/products/${editingProduct._id}`;
+        url = `/api/admin/products/${editingProduct.id}`;
         method = 'PUT';
       }
 
@@ -119,7 +119,7 @@ export default function AdminProducts() {
       });
 
       if (response.ok) {
-        setProducts(products.filter(p => p._id !== productId));
+        setProducts(products.filter(p => p.id !== productId));
         toast.success('Product deleted successfully!');
       } else {
         toast.error('Failed to delete product');
@@ -136,7 +136,7 @@ export default function AdminProducts() {
       description: product?.description || '',
       price: product?.price || 0,
       category: product?.category || '',
-      stock: product?.stock || 0,
+      countInStock: product?.countInStock || 0,
       image: product?.image || '',
     });
 
@@ -185,8 +185,8 @@ export default function AdminProducts() {
             <Input
               id="stock"
               type="number"
-              value={formData.stock}
-              onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) })}
+              value={formData.countInStock}
+              onChange={(e) => setFormData({ ...formData, countInStock: parseInt(e.target.value) })}
               required
             />
           </div>
@@ -300,7 +300,7 @@ export default function AdminProducts() {
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((product) => (
-                  <TableRow key={product._id}>
+                  <TableRow key={product.id}>
                     <TableCell>
                       <div className="flex items-center space-x-3">
                         <img
@@ -320,10 +320,10 @@ export default function AdminProducts() {
                       <Badge variant="outline">{product.category}</Badge>
                     </TableCell>
                     <TableCell>GH₵ {product.price.toFixed(2)}</TableCell>
-                    <TableCell>{product.stock}</TableCell>
+                    <TableCell>{product.countInStock}</TableCell>
                     <TableCell>
-                      <Badge variant={product.stock > 10 ? 'default' : product.stock > 0 ? 'secondary' : 'destructive'}>
-                        {product.stock > 10 ? 'In Stock' : product.stock > 0 ? 'Low Stock' : 'Out of Stock'}
+                      <Badge variant={product.countInStock > 10 ? 'default' : product.countInStock > 0 ? 'secondary' : 'destructive'}>
+                        {product.countInStock > 10 ? 'In Stock' : product.countInStock > 0 ? 'Low Stock' : 'Out of Stock'}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -338,7 +338,7 @@ export default function AdminProducts() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDelete(product._id)}
+                          onClick={() => handleDelete(product.id)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

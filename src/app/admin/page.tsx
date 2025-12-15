@@ -161,7 +161,7 @@ export default function AdminDashboard() {
         <CardContent>
           <div className="space-y-4">
             {recentProducts.slice(0, 5).map((product: any) => (
-              <div key={product._id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">
                   <img
                     src={product.image}
@@ -174,8 +174,8 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Badge variant={product.stock > 10 ? 'default' : product.stock > 0 ? 'secondary' : 'destructive'}>
-                    Stock: {product.stock}
+                  <Badge variant={product.countInStock > 10 ? 'default' : product.countInStock > 0 ? 'secondary' : 'destructive'}>
+                    Stock: {product.countInStock}
                   </Badge>
                   <Badge variant="outline">{product.category}</Badge>
                 </div>
