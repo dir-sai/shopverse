@@ -94,6 +94,9 @@ export function Footer() {
               <Link href="/support" className="text-gray-300 hover:text-white text-sm transition-colors">
                 Support
               </Link>
+              <Link href="/admin" className="text-yellow-300 hover:text-yellow-200 text-sm transition-colors font-semibold">
+                Admin
+              </Link>
             </div>
           </div>
         </div>
