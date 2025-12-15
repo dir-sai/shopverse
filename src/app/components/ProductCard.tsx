@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from './ui/card';
 import { Button } from './ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { Badge } from './ui/badge';
+import { formatCurrency } from '../../lib/currency';
 
 interface ProductCardProps {
   product: Product;
@@ -18,7 +19,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group">
-      <div onClick={() => onViewDetails(product._id)}>
+      <div onClick={() => onViewDetails(product.id)}>
         <div className="aspect-square overflow-hidden bg-gray-100">
           <img
             src={product.image}
@@ -33,11 +34,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
           <p className="text-sm text-gray-600 line-clamp-2 mb-3">{product.description}</p>
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold text-blue-600">
-              ${product.price.toFixed(2)}
+            <span className="text-2xl font-bold text-green-600">
+              {formatCurrency(product.price)}
             </span>
             <span className="text-sm text-gray-500">
-              {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+              {product.countInStock > 0 ? `${product.countInStock} in stock` : 'Out of stock'}
             </span>
           </div>
         </CardContent>
@@ -47,12 +48,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           className="w-full"
           onClick={(e) => {
             e.stopPropagation();
-            onAddToCart(product._id);
+            onAddToCart(product.id);
           }}
-          disabled={product.stock === 0}
+          disabled={product.countInStock === 0}
         >
           <ShoppingCart className="w-4 h-4 mr-2" />
-          {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+          {product.countInStock === 0 ? 'Out of Stock' : 'Add to Cart'}
         </Button>
       </CardFooter>
     </Card>

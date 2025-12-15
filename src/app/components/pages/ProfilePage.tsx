@@ -32,7 +32,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
                   </div>
                   <h2 className="text-xl font-bold mb-1">{user.name}</h2>
                   <p className="text-gray-600 mb-4">{user.email}</p>
-                  <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'}>
+                  <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
                     {user.role}
                   </Badge>
                 </div>
@@ -73,11 +73,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
                   <div>
                     <p className="text-sm text-gray-600">Member Since</p>
                     <p className="font-medium">
-                      {new Date(user.createdAt).toLocaleDateString('en-US', {
+                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
-                      })}
+                      }) : 'N/A'}
                     </p>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { Separator } from '../ui/separator';
+import { formatCurrency } from '../../../lib/currency';
 
 interface CartPageProps {
   onNavigate: (page: string) => void;
@@ -44,7 +45,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-              <Card key={item._id}>
+              <Card key={item.id}>
                 <CardContent className="p-6">
                   <div className="flex gap-6">
                     <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
@@ -60,7 +61,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
                         <div>
                           <h3 
                             className="font-semibold hover:text-blue-600 cursor-pointer"
-                            onClick={() => onNavigate('product-detail', item._id)}
+                            onClick={() => onNavigate('product-detail')}
                           >
                             {item.name}
                           </h3>
@@ -68,7 +69,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleRemove(item._id)}
+                          onClick={() => handleRemove(item.id)}
                           className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -80,7 +81,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)}
+                            onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                             disabled={item.quantity <= 1}
                           >
                             <Minus className="w-4 h-4" />
@@ -89,7 +90,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)}
+                            onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                           >
                             <Plus className="w-4 h-4" />
                           </Button>
@@ -97,10 +98,10 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
 
                         <div className="text-right">
                           <p className="text-sm text-gray-600">
-                            ${item.price.toFixed(2)} each
+                            {formatCurrency(item.price)} each
                           </p>
-                          <p className="font-bold text-lg">
-                            ${(item.price * item.quantity).toFixed(2)}
+                          <p className="font-semibold">
+                            {formatCurrency(item.price * item.quantity)}
                           </p>
                         </div>
                       </div>
@@ -120,15 +121,15 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">${getTotal().toFixed(2)}</span>
+                    <span className="font-medium">{formatCurrency(getTotal())}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Shipping</span>
                     <span className="font-medium text-green-600">Free</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Tax (estimated)</span>
-                    <span className="font-medium">${(getTotal() * 0.1).toFixed(2)}</span>
+                    <span className="text-gray-600">VAT (12.5%)</span>
+                    <span className="font-medium">{formatCurrency(getTotal() * 0.125)}</span>
                   </div>
                 </div>
 
@@ -136,8 +137,8 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
 
                 <div className="flex justify-between mb-6">
                   <span className="font-bold text-lg">Total</span>
-                  <span className="font-bold text-2xl text-blue-600">
-                    ${(getTotal() * 1.1).toFixed(2)}
+                  <span className="font-bold text-2xl text-green-600">
+                    {formatCurrency(getTotal() * 1.125)}
                   </span>
                 </div>
 

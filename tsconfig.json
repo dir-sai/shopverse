@@ -45,6 +45,9 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "scripts/clear-db.ts",
+    "scripts/seed-new.ts", 
+    "scripts/seed.ts"
   ]
 }

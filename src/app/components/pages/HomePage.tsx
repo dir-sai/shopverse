@@ -11,7 +11,7 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { addToCart } = useCart();
 
@@ -32,10 +32,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   const handleAddToCart = (productId: string) => {
-    const product = featuredProducts.find(p => p._id === productId);
+    const product = featuredProducts.find(p => p.id === productId);
     if (product) {
       addToCart({
-        _id: product._id,
+        id: product.id,
         name: product.name,
         price: product.price,
         image: product.image

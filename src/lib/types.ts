@@ -1,58 +1,98 @@
-// Production-ready types for ShopVerse
+// Core types for ShopVerse application
 
 export interface User {
-  _id: string;
+  id: string;
   name: string;
   email: string;
-  password: string;
-  role: 'USER' | 'ADMIN';
-  createdAt: string;
+  password: string; // hashed password
+  role: 'user' | 'admin';
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Product {
-  _id: string;
+  id: string;
   name: string;
   description: string;
-  price: number;
+  price: number; // In Ghana cedis (GHS)
+  currency: 'GHS';
   category: string;
-  stock: number;
   image: string;
-  createdAt: string;
+  rating: number;
+  numReviews: number;
+  countInStock: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CartItem {
-  _id: string;
-  productId: string;
-  quantity: number;
-}
-
-export interface Cart {
+  id: string;
   userId: string;
-  items: CartItem[];
-}
-
-export interface OrderProduct {
   productId: string;
   quantity: number;
-  price: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrderItem {
+  productId: string;
   name: string;
+  image: string;
+  price: number;
+  quantity: number;
+}
+
+export interface ShippingAddress {
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface PaymentResult {
+  id: string;
+  status: string;
+  updateTime: string;
+  emailAddress: string;
 }
 
 export interface Order {
   id: string;
   userId: string;
-  products: OrderProduct[];
-  totalAmount: number;
-  status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
-  createdAt: string;
+  orderItems: OrderItem[];
+  shippingAddress: ShippingAddress;
+  paymentMethod: string;
+  paymentResult?: PaymentResult;
+  itemsPrice: number;
+  taxPrice: number;
+  shippingPrice: number;
+  totalPrice: number;
+  isPaid: boolean;
+  paidAt?: Date;
+  isDelivered: boolean;
+  deliveredAt?: Date;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface AuthResponse {
-  user: Omit<User, 'password'>;
-  token: string;
+export interface Session {
+  id: string;
+  userId: string;
+  expiresAt: Date;
+  createdAt: Date;
 }
 
-export interface LoginCredentials {
+// API Response types
+export interface ApiResponse<T = any> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  error?: string;
+}
+
+// Auth types
+export interface LoginData {
   email: string;
   password: string;
 }
@@ -61,4 +101,13 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
+}
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'user' | 'admin';
+  password?: string; // Only available on server side
+  createdAt?: Date;
 }

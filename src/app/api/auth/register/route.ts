@@ -1,80 +1,71 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '../../../../lib/database';
-import { User } from '../../../../models/User';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import { dataStore } from '../../../../lib/dataStore';
+import { createUserSession } from '../../../../lib/auth';
+import { ApiResponse, AuthUser } from '../../../../lib/types';
 
 export async function POST(request: NextRequest) {
   try {
-    await connectToDatabase();
-
     const { name, email, password } = await request.json();
 
     // Validate input
     if (!name || !email || !password) {
-      return NextResponse.json(
-        { error: 'Name, email and password are required' },
-        { status: 400 }
-      );
+      return NextResponse.json<ApiResponse>({
+        success: false,
+        error: 'Name, email and password are required',
+      }, { status: 400 });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json<ApiResponse>({
+        success: false,
+        error: 'Invalid email format',
+      }, { status: 400 });
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      return NextResponse.json<ApiResponse>({
+        success: false,
+        error: 'Password must be at least 6 characters long',
+      }, { status: 400 });
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = dataStore.getUserByEmail(email);
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'User already exists with this email' },
-        { status: 409 }
-      );
+      return NextResponse.json<ApiResponse>({
+        success: false,
+        error: 'User already exists with this email',
+      }, { status: 409 });
     }
 
     // Create new user
-    const user = new User({
-      name,
-      email,
-      password,
-      role: 'USER'
-    });
-    
-    await user.save();
+    const user = await dataStore.createUser({ name, email, password });
 
-    // Generate tokens
-    const accessToken = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'your-jwt-secret-key',
-      { expiresIn: '15m' }
-    );
+    // Create session for the new user
+    await createUserSession(user.id);
 
-    const refreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_REFRESH_SECRET || 'your-jwt-refresh-secret',
-      { expiresIn: '7d' }
-    );
-
-    // Save refresh token
-    user.refreshToken = refreshToken;
-    await user.save();
-
-    // Remove password from response
-    const userResponse = {
-      _id: user._id,
+    // Return user data without password
+    const authUser: AuthUser = {
+      id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
-      createdAt: user.createdAt
     };
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponse<AuthUser>>({
+      success: true,
       message: 'User created successfully',
-      user: userResponse,
-      accessToken,
-      refreshToken
+      data: authUser,
     }, { status: 201 });
 
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json<ApiResponse>({
+      success: false,
+      error: 'Internal server error',
+    }, { status: 500 });
   }
 }

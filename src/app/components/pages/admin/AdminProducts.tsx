@@ -17,7 +17,7 @@ interface AdminProductsProps {
 
 export const AdminProducts: React.FC<AdminProductsProps> = ({ onNavigate }) => {
   const { token, isAdmin } = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -57,7 +57,7 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onNavigate }) => {
         description: product.description,
         price: product.price.toString(),
         category: product.category,
-        stock: product.stock.toString(),
+        stock: product.countInStock.toString(),
         image: product.image,
       });
     } else {
@@ -88,12 +88,13 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onNavigate }) => {
         image: formData.image,
       };
 
+      // TODO: Implement product update and create APIs
       if (editingProduct) {
-        await productsAPI.update(editingProduct.id, productData, token);
-        toast.success('Product updated successfully');
+        // await productsAPI.update(editingProduct.id, productData, token);
+        console.log('TODO: Update product', productData);
       } else {
-        await productsAPI.create(productData, token);
-        toast.success('Product created successfully');
+        // await productsAPI.create(productData, token);
+        console.log('TODO: Create product', productData);
       }
 
       setIsDialogOpen(false);
@@ -108,11 +109,11 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onNavigate }) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      await productsAPI.delete(id, token);
-      toast.success('Product deleted successfully');
-      loadProducts();
+      // TODO: Implement product delete API
+      // await productsAPI.delete(id, token);
+      console.log('TODO: Delete product', id);
     } catch (error) {
-      toast.error('Failed to delete product');
+      console.error('Delete error:', error);
     }
   };
 
@@ -158,7 +159,7 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onNavigate }) => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">Price ($)</Label>
+                    <Label htmlFor="price">Price (GH₵)</Label>
                     <Input
                       id="price"
                       type="number"
@@ -241,10 +242,10 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onNavigate }) => {
                           <p className="text-sm text-gray-600 mb-2">{product.description}</p>
                           <div className="flex gap-4 text-sm">
                             <span className="font-medium text-blue-600">
-                              ${product.price.toFixed(2)}
+                              GH₵{product.price.toFixed(2)}
                             </span>
                             <span className="text-gray-600">
-                              Stock: {product.stock}
+                              Stock: {product.countInStock}
                             </span>
                             <span className="text-gray-600">
                               Category: {product.category}

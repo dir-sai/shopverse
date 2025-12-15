@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { ArrowLeft, ShoppingCart, Minus, Plus } from 'lucide-react';
 import { Card } from '../ui/card';
+import { formatCurrency } from '../../../lib/currency';
 
 interface ProductDetailPageProps {
   productId: string;
@@ -13,7 +14,7 @@ interface ProductDetailPageProps {
 }
 
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId, onNavigate }) => {
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
@@ -35,12 +36,17 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId,
 
   const handleAddToCart = async () => {
     if (product) {
-      await addToCart(product.id, quantity);
+      await addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+      });
     }
   };
 
   const incrementQuantity = () => {
-    if (product && quantity < product.stock) {
+    if (product && quantity < product.countInStock) {
       setQuantity(q => q + 1);
     }
   };
@@ -107,12 +113,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId,
             <div className="mb-6">
               <div className="flex items-baseline gap-4 mb-4">
                 <span className="text-4xl font-bold text-blue-600">
-                  ${product.price.toFixed(2)}
+                  {formatCurrency(product.price)}
                 </span>
               </div>
               <p className="text-gray-600">
-                {product.stock > 0 ? (
-                  <span className="text-green-600">✓ In Stock ({product.stock} available)</span>
+                {product.countInStock > 0 ? (
+                  <span className="text-green-600">✓ In Stock ({product.countInStock} available)</span>
                 ) : (
                   <span className="text-red-600">Out of Stock</span>
                 )}
@@ -120,7 +126,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId,
             </div>
 
             {/* Quantity Selector */}
-            {product.stock > 0 && (
+            {product.countInStock > 0 && (
               <div className="mb-6">
                 <label className="block text-sm font-medium mb-2">Quantity</label>
                 <div className="flex items-center gap-4">
@@ -138,13 +144,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId,
                       variant="ghost"
                       size="sm"
                       onClick={incrementQuantity}
-                      disabled={quantity >= product.stock}
+                      disabled={quantity >= product.countInStock}
                     >
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
                   <span className="text-gray-600">
-                    Total: ${(product.price * quantity).toFixed(2)}
+                    Total: {formatCurrency(product.price * quantity)}
                   </span>
                 </div>
               </div>
@@ -155,10 +161,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ productId,
               size="lg"
               className="w-full"
               onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              disabled={product.countInStock === 0}
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
-              {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+              {product.countInStock === 0 ? 'Out of Stock' : 'Add to Cart'}
             </Button>
 
             {/* Product Details */}

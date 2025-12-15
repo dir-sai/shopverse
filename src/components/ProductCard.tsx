@@ -17,7 +17,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToCart = () => {
     addToCart({
-      _id: product._id,
+      id: product.id,
       name: product.name,
       price: product.price,
       image: product.image
@@ -35,12 +35,12 @@ export function ProductCard({ product }: ProductCardProps) {
             height={200}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
           />
-          {product.stock < 10 && product.stock > 0 && (
+          {product.countInStock < 10 && product.countInStock > 0 && (
             <Badge variant="destructive" className="absolute top-2 right-2">
               Low Stock
             </Badge>
           )}
-          {product.stock === 0 && (
+          {product.countInStock === 0 && (
             <Badge variant="secondary" className="absolute top-2 right-2">
               Out of Stock
             </Badge>
@@ -75,11 +75,11 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardFooter className="p-4 pt-0">
         <Button 
           onClick={handleAddToCart}
-          disabled={product.stock === 0}
+          disabled={product.countInStock === 0}
           className="w-full"
         >
           <ShoppingCart className="w-4 h-4 mr-2" />
-          {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+          {product.countInStock === 0 ? 'Out of Stock' : 'Add to Cart'}
         </Button>
       </CardFooter>
     </Card>

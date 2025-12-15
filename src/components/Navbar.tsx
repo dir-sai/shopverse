@@ -52,7 +52,7 @@ export function Navbar() {
                 <span className="text-sm text-gray-700 hidden sm:block">
                   Welcome, {user.name}
                 </span>
-                {user.role === 'ADMIN' && (
+                {user.role === 'admin' && (
                   <Link href="/admin">
                     <Button variant="secondary" size="sm">
                       Admin

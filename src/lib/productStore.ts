@@ -10,7 +10,7 @@ class ProductStore {
   }
 
   getById(id: string) {
-    return this.products.find(product => product._id === id);
+    return this.products.find(product => product.id === id);
   }
 
   create(productData: any) {
@@ -24,7 +24,7 @@ class ProductStore {
   }
 
   update(id: string, updateData: any) {
-    const index = this.products.findIndex(product => product._id === id);
+    const index = this.products.findIndex(product => product.id === id);
     if (index === -1) return null;
     
     this.products[index] = {
@@ -35,7 +35,7 @@ class ProductStore {
   }
 
   delete(id: string) {
-    const index = this.products.findIndex(product => product._id === id);
+    const index = this.products.findIndex(product => product.id === id);
     if (index === -1) return null;
     
     return this.products.splice(index, 1)[0];

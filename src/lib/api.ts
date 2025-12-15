@@ -39,6 +39,14 @@ interface Product {
   createdAt: string;
 }
 
+interface Cart {
+  userId: string;
+  items: Array<{
+    productId: string;
+    quantity: number;
+  }>;
+}
+
 // Generic API request function
 async function apiRequest<T>(
   endpoint: string, 
@@ -137,66 +145,6 @@ export const productsAPI = {
   },
 };
 
-    products[index] = { ...products[index], ...updates };
-    localStorage.setItem('shopverse_products', JSON.stringify(products));
-    return products[index];
-  },
-
-  async delete(id: string, token: string): Promise<void> {
-    await delay();
-    const verified = verifyToken(token);
-    if (!verified || verified.role !== 'ADMIN') {
-      throw new Error('Unauthorized');
-    }
-
-    const products: Product[] = JSON.parse(localStorage.getItem('shopverse_products') || '[]');
-    const filtered = products.filter(p => p.id !== id);
-    localStorage.setItem('shopverse_products', JSON.stringify(filtered));
-  },
-};
-
-// Cart API
-export const cartAPI = {
-  async get(userId: string): Promise<Cart> {
-    await delay();
-    const carts: Cart[] = JSON.parse(localStorage.getItem('shopverse_carts') || '[]');
-    const cart = carts.find(c => c.userId === userId);
-    return cart || { userId, items: [] };
-  },
-
-  async addItem(userId: string, productId: string, quantity: number): Promise<Cart> {
-    await delay();
-    const carts: Cart[] = JSON.parse(localStorage.getItem('shopverse_carts') || '[]');
-    let cart = carts.find(c => c.userId === userId);
-
-    if (!cart) {
-      cart = { userId, items: [] };
-      carts.push(cart);
-    }
-
-    const existingItem = cart.items.find(item => item.productId === productId);
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      cart.items.push({ productId, quantity });
-    }
-
-    localStorage.setItem('shopverse_carts', JSON.stringify(carts));
-    return cart;
-  },
-
-  async updateItem(userId: string, productId: string, quantity: number): Promise<Cart> {
-    await delay();
-    const carts: Cart[] = JSON.parse(localStorage.getItem('shopverse_carts') || '[]');
-    const cart = carts.find(c => c.userId === userId);
-
-    if (!cart) throw new Error('Cart not found');
-
-    const item = cart.items.find(i => i.productId === productId);
-    if (!item) throw new Error('Item not found in cart');
-
-    if (quantity <= 0) {
-      cart.items = cart.items.filter(i => i.productId !== productId);
 // Cart utility functions (localStorage-based for simplicity)
 export const cartUtils = {
   getCartItems(): Array<{ _id: string; name: string; price: number; image: string; quantity: number }> {

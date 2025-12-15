@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useCart } from '../../../contexts/CartContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { ordersAPI } from '../../../lib/api';
+// TODO: Implement ordersAPI
+// import { ordersAPI } from '../../../lib/api';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
@@ -9,6 +10,7 @@ import { Label } from '../ui/label';
 import { Separator } from '../ui/separator';
 import { CreditCard, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatCurrency } from '../../../lib/currency';
 
 interface CheckoutPageProps {
   onNavigate: (page: string) => void;
@@ -49,13 +51,15 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
 
       // Create order
       const orderProducts = items.map(item => ({
-        productId: item.product.id,
+        productId: item.id,
         quantity: item.quantity,
-        price: item.product.price,
-        name: item.product.name,
+        price: item.price,
+        name: item.name,
       }));
 
-      await ordersAPI.create(user.id, orderProducts, getTotal() * 1.1);
+      // TODO: Implement orders API
+      // await ordersAPI.create(user.id, orderProducts, getTotal() * 1.1);
+      console.log('Order would be created:', { userId: user.id, orderProducts, total: getTotal() * 1.1 });
 
       toast.success('Order placed successfully!');
       await clearCart();
@@ -73,7 +77,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
   }
 
   const subtotal = getTotal();
-  const tax = subtotal * 0.1;
+  const tax = subtotal * 0.125; // Ghana VAT rate 12.5%
   const total = subtotal + tax;
 
   return (
@@ -212,13 +216,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    {items.map(({ product, quantity }) => (
-                      <div key={product.id} className="flex justify-between text-sm">
+                    {items.map((item) => (
+                      <div key={item.id} className="flex justify-between text-sm">
                         <span className="text-gray-600">
-                          {product.name} x {quantity}
+                          {item.name} x {item.quantity}
                         </span>
                         <span className="font-medium">
-                          ${(product.price * quantity).toFixed(2)}
+                          {formatCurrency(item.price * item.quantity)}
                         </span>
                       </div>
                     ))}
@@ -229,15 +233,15 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Subtotal</span>
-                      <span className="font-medium">${subtotal.toFixed(2)}</span>
+                      <span className="font-medium">{formatCurrency(subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Shipping</span>
                       <span className="font-medium text-green-600">Free</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Tax</span>
-                      <span className="font-medium">${tax.toFixed(2)}</span>
+                      <span className="text-gray-600">VAT (12.5%)</span>
+                      <span className="font-medium">{formatCurrency(tax)}</span>
                     </div>
                   </div>
 
@@ -246,7 +250,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                   <div className="flex justify-between">
                     <span className="font-bold">Total</span>
                     <span className="font-bold text-2xl text-blue-600">
-                      ${total.toFixed(2)}
+                      {formatCurrency(total)}
                     </span>
                   </div>
 

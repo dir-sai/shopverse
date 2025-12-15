@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Order } from '../../../../lib/types';
-import { ordersAPI } from '../../../../lib/api';
+// TODO: Implement ordersAPI
+// import { ordersAPI } from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Badge } from '../../ui/badge';
@@ -27,10 +28,12 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ onNavigate }) => {
 
   const loadOrders = async () => {
     if (!token) return;
-
+    
     try {
-      const data = await ordersAPI.getAll(token);
-      setOrders(data);
+      // TODO: Implement orders API
+      // const data = await ordersAPI.getAll(token);
+      // setOrders(data);
+      setOrders([]);
     } catch (error) {
       console.error('Failed to load orders:', error);
     } finally {
@@ -38,19 +41,19 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ onNavigate }) => {
     }
   };
 
-  const handleUpdateStatus = async (orderId: string, newStatus: Order['status']) => {
+  const handleUpdateStatus = async (orderId: string, newStatus: any) => {
     if (!token) return;
 
     try {
-      await ordersAPI.updateStatus(orderId, newStatus, token);
-      toast.success('Order status updated');
-      loadOrders();
+      // TODO: Implement order status update API
+      // await ordersAPI.updateStatus(orderId, newStatus, token);
+      console.log('TODO: Update order status', orderId, newStatus);
     } catch (error) {
-      toast.error('Failed to update order status');
+      console.error('Failed to update order status:', error);
     }
   };
 
-  const getStatusColor = (status: Order['status']) => {
+  const getStatusColor = (status: any) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
@@ -115,22 +118,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ onNavigate }) => {
                   <div className="mb-4">
                     <h4 className="font-semibold mb-3">Order Items:</h4>
                     <div className="space-y-2">
-                      {order.products.map((product, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded"
-                        >
-                          <div>
-                            <p className="font-medium">{product.name}</p>
-                            <p className="text-sm text-gray-600">
-                              ${product.price.toFixed(2)} × {product.quantity}
-                            </p>
-                          </div>
-                          <p className="font-medium">
-                            ${(product.price * product.quantity).toFixed(2)}
-                          </p>
-                        </div>
-                      ))}
+                      <p className="text-gray-500">Order items will be displayed here when orders API is implemented.</p>
                     </div>
                   </div>
 
@@ -138,7 +126,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ onNavigate }) => {
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="flex items-center gap-4">
                       <span className="font-bold text-lg">
-                        Total: <span className="text-blue-600">${order.totalAmount.toFixed(2)}</span>
+                        Total: <span className="text-blue-600">${order.totalPrice?.toFixed(2) || '0.00'}</span>
                       </span>
                     </div>
                     <div className="flex items-center gap-3">

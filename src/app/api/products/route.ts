@@ -1,85 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase, connectDB } from '../../../lib/database';
-import { Product } from '../../../models/Product';
-import { productStore } from '../../../lib/productStore';
+import { dataStore } from '../../../lib/dataStore';
+import { ApiResponse, Product } from '../../../lib/types';
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = parseInt(searchParams.get('limit') || '12');
-  const category = searchParams.get('category');
-  const search = searchParams.get('search');
-
   try {
-    await connectToDatabase();
-
-    // Database is connected, use real data
+    const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
     const category = searchParams.get('category');
     const search = searchParams.get('search');
 
-    const query: any = {};
-    
+    // Get all products from data store
+    let allProducts = dataStore.getAllProducts();
+
+    // Filter by category
     if (category && category !== 'all') {
-      query.category = category;
+      allProducts = allProducts.filter(product => 
+        product.category.toLowerCase() === category.toLowerCase()
+      );
     }
-    
+
+    // Filter by search term
     if (search) {
-      query.$text = { $search: search };
+      const searchTerm = search.toLowerCase();
+      allProducts = allProducts.filter(product => 
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.description.toLowerCase().includes(searchTerm) ||
+        product.category.toLowerCase().includes(searchTerm)
+      );
     }
 
+    // Sort by creation date (newest first)
+    allProducts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    // Implement pagination
+    const total = allProducts.length;
     const skip = (page - 1) * limit;
+    const products = allProducts.slice(skip, skip + limit);
 
-    const [products, total] = await Promise.all([
-      Product.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      Product.countDocuments(query)
-    ]);
-
-    return NextResponse.json({
-      products,
+    return NextResponse.json<ApiResponse<{
+      products: Product[];
       pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
-      }
+        page: number;
+        limit: number;
+        total: number;
+        pages: number;
+      };
+    }>>({
+      success: true,
+      data: {
+        products,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+      },
     });
 
   } catch (error) {
     console.error('Get products error:', error);
-    console.log('🔄 Database unavailable, using mock data for demo');
-    
-    // Use shared product store (includes any admin changes)
-    return NextResponse.json(
-      productStore.filter({
-        category,
-        search,
-        page,
-        limit
-      })
-    );
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    await connectToDatabase();
-
-    const productData = await request.json();
-    const product = new Product(productData);
-    await product.save();
-
-    return NextResponse.json(product, { status: 201 });
-
-  } catch (error) {
-    console.error('Create product error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json<ApiResponse>({
+      success: false,
+      error: 'Internal server error',
+    }, { status: 500 });
   }
 }

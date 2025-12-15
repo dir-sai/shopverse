@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { productsAPI, ordersAPI, usersAPI } from '../../../../lib/api';
+import { productsAPI } from '../../../../lib/api';
+// TODO: Implement ordersAPI and usersAPI
+// import { ordersAPI, usersAPI } from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Package, ShoppingCart, Users, DollarSign } from 'lucide-react';
@@ -30,19 +32,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
     if (!token) return;
 
     try {
-      const [products, orders, users] = await Promise.all([
-        productsAPI.getAll(),
-        ordersAPI.getAll(token),
-        usersAPI.getAll(token),
-      ]);
+      // TODO: Implement orders and users API
+      const products = await productsAPI.getAll();
+      // const [products, orders, users] = await Promise.all([
+      //   productsAPI.getAll(),
+      //   ordersAPI.getAll(token),
+      //   usersAPI.getAll(token),
+      // ]);
 
-      const revenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+      // const revenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
 
       setStats({
         totalProducts: products.length,
-        totalOrders: orders.length,
-        totalUsers: users.length,
-        totalRevenue: revenue,
+        totalOrders: 0, // orders.length,
+        totalUsers: 0, // users.length,
+        totalRevenue: 0, // revenue,
       });
     } catch (error) {
       console.error('Failed to load stats:', error);
