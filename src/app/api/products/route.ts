@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase, connectDB } from '../../../lib/database';
 import { Product } from '../../../models/Product';
-import { initialProducts } from '../../../lib/mockData';
+import { productStore } from '../../../lib/productStore';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -53,39 +53,15 @@ export async function GET(request: NextRequest) {
     console.error('Get products error:', error);
     console.log('🔄 Database unavailable, using mock data for demo');
     
-    // Fallback to mock data when database is not available
-    let filteredProducts = [...initialProducts];
-    
-    // Apply category filter if specified
-    if (category && category !== 'all') {
-      filteredProducts = filteredProducts.filter(product => 
-        product.category.toLowerCase() === category.toLowerCase()
-      );
-    }
-    
-    // Apply search filter if specified
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filteredProducts = filteredProducts.filter(product =>
-        product.name.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower)
-      );
-    }
-    
-    // Apply pagination
-    const total = filteredProducts.length;
-    const skip = (page - 1) * limit;
-    const paginatedProducts = filteredProducts.slice(skip, skip + limit);
-    
-    return NextResponse.json({
-      products: paginatedProducts,
-      pagination: {
+    // Use shared product store (includes any admin changes)
+    return NextResponse.json(
+      productStore.filter({
+        category,
+        search,
         page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
+        limit
+      })
+    );
   }
 }
 

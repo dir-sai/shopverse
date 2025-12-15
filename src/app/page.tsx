@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Navbar } from '../components/Navbar';
 import { ProductCard } from '../components/ProductCard';
+import { Footer } from '../components/Footer';
 import { Button } from './components/ui/button';
 import { Badge } from './components/ui/badge';
 import { Product } from '../lib/types';
@@ -119,7 +120,7 @@ export default function HomePage() {
                 <span className="text-2xl">🚚</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Free Shipping</h3>
-              <p className="text-gray-600">Free shipping on orders over $50</p>
+              <p className="text-gray-600">Free shipping on orders over GH₵ 800</p>
             </div>
             <div className="text-center p-6">
               <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -138,6 +139,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 }

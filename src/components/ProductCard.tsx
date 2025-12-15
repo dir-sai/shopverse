@@ -64,7 +64,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <span className="text-2xl font-bold text-blue-600">
-                ${product.price.toFixed(2)}
+                GH₵ {product.price.toFixed(2)}
               </span>
             </div>
             <Badge variant="outline">{product.category}</Badge>
