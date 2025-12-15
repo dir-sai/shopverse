@@ -27,8 +27,10 @@ export default function AdminDashboard() {
     try {
       const response = await fetch('/api/admin/stats');
       if (response.ok) {
-        const data = await response.json();
-        setStats(data);
+        const result = await response.json();
+        if (result.success && result.data) {
+          setStats(result.data);
+        }
       }
     } catch (error) {
       // Fallback to mock data
@@ -45,8 +47,10 @@ export default function AdminDashboard() {
     try {
       const response = await fetch('/api/products?limit=5');
       if (response.ok) {
-        const data = await response.json();
-        setRecentProducts(data.products || []);
+        const result = await response.json();
+        if (result.success && result.data) {
+          setRecentProducts(result.data.products || []);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch recent products:', error);

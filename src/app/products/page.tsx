@@ -33,9 +33,11 @@ export default function ProductsPage() {
       
       const response = await fetch(`/api/products?${params}`);
       if (response.ok) {
-        const data = await response.json();
-        setProducts(data.products);
-        setTotalPages(data.pagination.pages);
+        const result = await response.json();
+        if (result.success && result.data) {
+          setProducts(result.data.products);
+          setTotalPages(result.data.pagination.pages);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch products:', error);

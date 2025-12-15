@@ -46,8 +46,10 @@ export default function AdminProducts() {
     try {
       const response = await fetch('/api/products?limit=100');
       if (response.ok) {
-        const data = await response.json();
-        setProducts(data.products || []);
+        const result = await response.json();
+        if (result.success && result.data) {
+          setProducts(result.data.products || []);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch products:', error);
